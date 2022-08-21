@@ -1,0 +1,92 @@
+parameters:
+  AzureSubscription: ''
+  Powershell5CodeCoveragePercentage: 80
+  PowershellCoreCodeCoveragePercentage: 80
+
+stages:
+- stage: Test
+  jobs:
+    - template: ../JobTemplates/RunIndividualTest.yml
+      parameters:
+        RequiresAzurePowershell: true
+        AzureSubscription: '${{ parameters.AzureSubscription }}'
+        TestName: 'RunAcceptanceTests'
+        TestType: 'ArmAcceptance'
+        ResultsFileSuffix: 'Acceptance'
+
+    - job: RunArmTemplateTests
+      displayName: 'Run Arm/Bicep Template Tests'
+      workspace:
+        clean: all
+      steps:
+      - task: RunARMTTKTests@1
+        displayName: RunArmTemplateTests
+        inputs:
+          templatelocation: '$(System.DefaultWorkingDirectory)\ArmTemplates'
+          resultLocation: '$(System.DefaultWorkingDirectory)/results'
+          includeTests: ''
+          skipTests: 'IDs Should Be Derived From ResourceIDs,apiVersions Should Be Recent,providers_apiVersions-Is-Not-Permitted,Outputs Must Not Contain Secrets,Template Should Not Contain Blanks,DeploymentTemplate Must Not Contain Hardcoded Uri'
+          mainTemplates: ''
+          allTemplatesMain: false
+          cliOutputResults: true
+        continueOnError: true
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'NUnit'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)\results\*-armttk.xml'
+        condition: always()     
+      
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline' # Optional. Options: filePath, inline
+          script:  |
+            $BicepFiles = (Get-ChildItem -Path '$(System.DefaultWorkingDirectory)\BicepModules' -Recurse | Where-Object {$_.Name -like "*.bicep"})
+            foreach ($fileItem in $BicepFiles) {
+              Write-Host "Changing $fileItem to json"
+              az bicep build --file $fileItem.FullName
+            }
+            Get-ChildItem -Path '$(System.DefaultWorkingDirectory)\BicepModules' -Include *.bicep -Recurse | Remove-Item
+          workingDirectory: '$(System.DefaultWorkingDirectory)\BicepModules'
+
+      - task: RunARMTTKTests@1
+        displayName: RunBicepTemplateTests
+        inputs:
+          templatelocation: '$(System.DefaultWorkingDirectory)\BicepModules'
+          resultLocation: '$(System.DefaultWorkingDirectory)/BicepResults'
+          includeTests: ''
+          skipTests: 'IDs Should Be Derived From ResourceIDs,apiVersions Should Be Recent,providers_apiVersions-Is-Not-Permitted,Outputs Must Not Contain Secrets,Template Should Not Contain Blanks,DeploymentTemplate Must Not Contain Hardcoded Uri'
+          mainTemplates: ''
+          allTemplatesMain: false
+          cliOutputResults: true
+        continueOnError: true
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'NUnit'
+          testResultsFiles: '$(System.DefaultWorkingDirectory)\BicepResults\*-armttk.xml'
+        condition: always()
+
+    - template: ../JobTemplates/RunIndividualTest.yml
+      parameters:
+        RequiresPowershellCore: true
+        TestName: 'RunQualityTests'
+        TestType: 'Quality'
+        ResultsFileSuffix: 'Quality'
+
+    - template: ../JobTemplates/RunIndividualTest.yml
+      parameters:
+        RequiresAzurePowershell: true
+        AzureSubscription: '${{ parameters.AzureSubscription }}'
+        TestName: 'RunPowershell5UnitTests'
+        TestType: 'Unit'
+        ResultsFileSuffix: 'powershell'
+        CodeCoveragePercentage: ${{ parameters.Powershell5CodeCoveragePercentage }}
+
+    - template: ../JobTemplates/RunIndividualTest.yml
+      parameters:
+        RequiresPowershellCore: true
+        TestName: 'RunPowershellCoreUnitTests'
+        TestType: 'Unit'
+        ResultsFileSuffix: 'pwsh'
+        CodeCoveragePercentage: ${{ parameters.PowershellCoreCodeCoveragePercentage }}

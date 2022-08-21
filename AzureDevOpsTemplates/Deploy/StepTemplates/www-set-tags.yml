@@ -1,0 +1,29 @@
+# This template includes a tokenisation step.  
+# In addition to the passing in the parameters listed below you will need to ensure that the variables that are tokenised are scoped to the stage or job calling this step template.
+
+parameters:
+  Location: 'West Europe'
+  AzureSubscription: ''
+  ResourceGroup: ''
+  envTag: ''
+  orgTag: ''
+  teamTag: ''
+  CostCenterTag: ''
+  instanceTag: ''
+  SetTagsScriptUrl: 'https://raw.githubusercontent.com/sweaty-betty/sb-www-devops/master/PSScripts/Set-WWWResourceGroupTags.ps1'
+  SetTagsScriptFilePath: '$(System.DefaultWorkingDirectory)\Set-WWWResourceGroupTags.ps1'
+
+steps:
+- task: PowerShell@2
+  displayName: 'Download Set-WWWResourceGroupTags script'
+  inputs:
+    targetType: 'inline'
+    script: Invoke-WebRequest -Uri ${{ parameters.SetTagsScriptUrl }} -OutFile ${{ parameters.SetTagsScriptFilePath }}
+- task: AzurePowerShell@3
+  displayName: 'Tagging Resource Group ${{ parameters.ResourceGroup }}'
+  inputs:
+    azureSubscription: ${{ parameters.AzureSubscription }}
+    scriptType: filePath
+    ScriptPath: ${{ parameters.SetTagsScriptFilePath }}
+    ScriptArguments: '-ResourceGroupName ${{ parameters.ResourceGroup }}  -Location "${{  parameters.Location  }}" -env "${{ parameters.envTag }}" -org "${{ parameters.orgTag }}" -team "${{ parameters.teamTag }}"  -CostCenter "${{ parameters.CostCenterTag }}" -instance "${{ parameters.instanceTag }}" -Verbose'
+    azurePowerShellVersion: LatestVersion

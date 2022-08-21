@@ -1,0 +1,36 @@
+variables:
+- name: SolutionBaseName
+  value: sb.DevOps
+
+resources:
+  repositories:
+  - repository: self
+  - repository: sb-www-devops
+    type: github
+    name: sweaty-betty/sb-www-devops
+    endpoint: 'sweaty-betty'
+    ref: refs/tags/v1.11.2
+
+pool:
+  name: 'DevOpsPool'
+# trigger:
+#   branches:
+#     include:
+#     - master
+#     - dev
+
+pr:
+  branches:
+    include:
+    - master
+    - dev
+
+
+stages:
+- template: StageTemplates/RunTests.yml
+  parameters:
+    AzureSubscription: 'sb-devops-nonprod(71203444-f44a-44ec-8050-d13b6e4b9867)'
+    Powershell5CodeCoveragePercentage: 37
+    PowershellCoreCodeCoveragePercentage: 30
+
+
