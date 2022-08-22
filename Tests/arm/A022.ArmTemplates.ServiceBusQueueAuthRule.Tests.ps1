@@ -3,7 +3,7 @@ Describe "Service Bus Queue Authorization Rule (shared access policy) Deployment
 
   BeforeAll {
     # common variables
-    $ResourceGroupName = "sb-test-template-rg"
+    $ResourceGroupName = "template-test-az-sb-iaas-nonprod-uks-rg"
     $TemplateFile = "$PSScriptRoot\..\..\ArmTemplates\ServiceBus\servicebus-queue-authrule.json"
 
 

@@ -3,7 +3,7 @@ Describe "App Service Deployment Tests" -Tag "Acceptance" {
 
   BeforeAll {
     # common variables
-    $ResourceGroupName = "sb-test-template-rg"
+    $ResourceGroupName = "template-test-az-sb-iaas-nonprod-uks-rg"
     $TemplateFile = "$PSScriptRoot\..\..\ArmTemplates\app-service.json"
 
   }

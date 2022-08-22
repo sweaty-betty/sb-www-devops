@@ -3,7 +3,7 @@ Describe "CDN Endpoint Deployment Tests" -Tag "Acceptance" {
     
     BeforeAll {
         # common variables
-        $ResourceGroupName = "sb-test-template-rg"
+        $ResourceGroupName = "template-test-az-sb-iaas-nonprod-uks-rg"
         $TemplateFile = "$PSScriptRoot\..\..\ArmTemplates\CDN\cdn-endpoint.json"
         $TemplateParametersDefault = @{
             cdnProfileName  = "sb-foo-shared-cdn"

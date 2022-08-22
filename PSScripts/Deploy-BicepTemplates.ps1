@@ -13,10 +13,10 @@ Normally contains dummy values unless it is a dependancy in which case a valid v
 The template file to test
 
 .PARAMETER ResourceGroupName
-The name of the resource group to test the ARM template against.  Defaults to sb-test-template-rg
+The name of the resource group to test the ARM template against.  Defaults to template-test-az-sb-iaas-nonprod-uks-rg
 
 .PARAMETER BuildNumber
-The name of the resource group to test the ARM template against.  Defaults to sb-test-template-rg
+The name of the resource group to test the ARM template against.  Defaults to template-test-az-sb-iaas-nonprod-uks-rg
 
 .EXAMPLE
 Test-ArmTemplate.ps1 -ParameterFile paramaters.json -TemplateFile template.json -BuildNumber 20220529.18
@@ -26,7 +26,7 @@ Test-ArmTemplate.ps1 -ParameterFile paramaters.json -TemplateFile template.json 
 Param(
     [string] $ParameterFile,
     [string] $TemplateFile,
-    [string] $ResourceGroupName = "sb-test-template-rg",
+    [string] $ResourceGroupName = "template-test-az-sb-iaas-nonprod-uks-rg",
     [string] $BuildNumber = "BuildNumber"
 )
 

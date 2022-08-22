@@ -2,7 +2,7 @@
 Describe "Sql Database Deployment Tests" -Tag "Acceptance" {
     BeforeAll {
         # common variables
-        $ResourceGroupName = "sb-test-template-rg"
+        $ResourceGroupName = "template-test-az-sb-iaas-nonprod-uks-rg"
         $TemplateFile = "$PSScriptRoot\..\..\ArmTemplates\SqlServer\sql-database.json"
         $TemplateParametersDefault = @{
             databaseName  = "sb-foo-bar-db"

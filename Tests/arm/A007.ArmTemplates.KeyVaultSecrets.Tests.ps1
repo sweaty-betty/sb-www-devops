@@ -2,7 +2,7 @@ Describe "Key Vault Secrets Deployment Tests" -Tag "DontRun" {
 
   BeforeAll {
     # common variables
-    $ResourceGroupName = "sb-test-template-rg"
+    $ResourceGroupName = "template-test-az-sb-iaas-nonprod-uks-rg"
     $TemplateFile = "$PSScriptRoot\..\..\ArmTemplates\KeyVault\keyvault-secrets.json"
   }
 
