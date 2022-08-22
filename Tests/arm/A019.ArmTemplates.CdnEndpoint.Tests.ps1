@@ -9,6 +9,7 @@ Describe "CDN Endpoint Deployment Tests" -Tag "Acceptance" {
             cdnProfileName  = "sb-foo-shared-cdn"
             cdnEndPointName = "sb-foo-bar-assets"
             originHostName  = "https://sbfoobarstr.z6.web.core.windows.net/"
+            location = "West Europe"
         }
     }
 
